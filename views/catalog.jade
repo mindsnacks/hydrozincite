@@ -1,0 +1,8 @@
+extends layout
+
+block content
+  h1= title
+  ul
+    each bundle_data, bundle in data.bundles
+      li
+        a(href='/#{data.id}/#{bundle}')= bundle
