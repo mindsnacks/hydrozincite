@@ -4,6 +4,7 @@
  */
 
 var express = require('express')
+  , params = require('express-params')
   , routes = require('./routes')
   , http = require('http')
   , path = require('path')
@@ -11,6 +12,7 @@ var express = require('express')
   , auth = express.basicAuth('mindsnacks', 'nicksdamns');
 
 var app = express();
+params.extend(app);
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
@@ -32,6 +34,9 @@ var zinc = new Zinc('mindsnacks-zinc.s3.amazonaws.com');
 
 app.get('/', routes.index);
 
+app.param('catalog', /\w+\.[\w.]+/);
+app.param('bundle', /[0-9a-z-]+/);
+
 app.get('/:catalog', zinc.ensureCatalog(), function(req, res) {
   catalog = req.params.catalog;
   res.format({
@@ -52,6 +57,7 @@ app.get('/:catalog', zinc.ensureCatalog(), function(req, res) {
 app.get('/:catalog/:bundle', zinc.ensureManifest(), function(req, res) {
   var catalog = req.params.catalog,
       bundle = req.params.bundle;
+      console.log(req.accepted)
   res.format({
     html: function(){
       var vars = {
@@ -78,11 +84,15 @@ app.get('/:catalog/:bundle/*', zinc.ensureManifest(), function(req, res) {
   });
 });
 
-app.all('/settings', auth, function (req, res) {
+app.all('/admin/*', auth);
+app.get('/admin/settings', function (req, res) {
   loadSettings(req.query);
   res.send('OK!');
 });
-
+app.get('/admin/reset', function (req, res) {
+  zinc.reset();
+  res.send('Cache reset!');
+});
 function loadSettings(settings) {
   for (key in settings) {
     app.set('settings ' + key, settings[key]);

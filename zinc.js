@@ -25,7 +25,6 @@ Zinc.prototype.get = function (catalog, path, callback) {
 
     resp.on('end', function(){
       bufs = Buffer.concat(bufs);
-
       if (path.split('.').pop() == 'gz') {
         zlib.unzip(bufs, function(err, data){
           if (err) console.error(err);
@@ -67,7 +66,7 @@ Zinc.prototype.getManifest = function (catalog, bundle, callback) {
 }
 
 Zinc.prototype.filePath = function (sha, fmt) {
-  return 'objects/' + sha.slice(0,2) + '/' + sha.slice(2,4) + '/' + sha + '.' + fmt;
+  return 'objects/' + sha.slice(0,2) + '/' + sha.slice(2,4) + '/' + sha + (fmt != 'raw' ? '.' + fmt : '');
 }
 
 Zinc.prototype.getFile = function (catalog, bundle, file, callback) {
@@ -80,6 +79,10 @@ Zinc.prototype.getFile = function (catalog, bundle, file, callback) {
     man.files[file].cached = data;
     callback(data);
   });
+}
+
+Zinc.prototype.reset = function () {
+  return this.catalogs = {};
 }
 
 // ------
