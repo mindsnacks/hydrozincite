@@ -54,7 +54,7 @@ Zinc.prototype.getManifest = function (catalog, bundle, callback) {
   if (!this.catalogs[catalog]) {
     return this.getCatalog(catalog, function () { _this.getManifest.apply(_this, args) });
   }
-
+  console.log(bundle);
   var bundle_meta = this.catalogs[catalog].bundles[bundle],
       latest = bundle_meta.versions.slice(-1)[0];
 

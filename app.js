@@ -35,7 +35,7 @@ var zinc = new Zinc('mindsnacks-zinc.s3.amazonaws.com');
 app.get('/', routes.index);
 
 app.param('catalog', /\w+\.[\w.]+/);
-app.param('bundle', /[0-9a-z-]+/);
+app.param('bundle', /[\w-]+/);
 
 app.get('/:catalog', zinc.ensureCatalog(), function(req, res) {
   catalog = req.params.catalog;
