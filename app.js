@@ -36,6 +36,7 @@ app.get('/', routes.index);
 
 app.param('catalog', /\w+\.[\w.]+/);
 app.param('bundle', /[\w-]+/);
+app.param('version', /[0-9]+/);
 
 app.get('/:catalog', zinc.ensureCatalog(), function(req, res) {
   catalog = req.params.catalog;
@@ -54,44 +55,51 @@ app.get('/:catalog', zinc.ensureCatalog(), function(req, res) {
   });
 });
 
-app.get('/:catalog/:bundle', zinc.ensureManifest(), function(req, res) {
+var loadManifest = [zinc.ensureManifest(), function (req, res) {
   var catalog = req.params.catalog,
-      bundle = req.params.bundle;
-      console.log(req.accepted)
+      bundle = req.params.bundle,
+      version = req.params.version;
   res.format({
     html: function(){
-      var vars = {
-        title: 'Files for ' + bundle,
-        data: zinc.catalogs[catalog].manifests[bundle],
+      var vars = { 
+        title: 'Files for ' + bundle + (version ? ' v' + version : ''),
+        data: zinc.manifest(catalog, bundle, version),
         bundle: bundle,
-        catalog: req.params.catalog
+        catalog: req.params.catalog,
+        zinc: zinc,
+        version: version
       }
       res.render('bundle', vars);
     },
 
     json: function(){
-      res.json(zinc.catalogs[catalog].manifests[req.params.manifest]);
+      res.json(zinc.manifest(catalog, bundle, version));
     }
   });
-});
+}];
+app.get('/:catalog/:bundle.:version', loadManifest);
 
-app.get('/:catalog/:bundle/*', zinc.ensureManifest(), function(req, res) {
+app.get('/:catalog/:bundle', loadManifest);
+
+var curryFile = [zinc.ensureManifest(), function(req, res) {
   var file = req.params[0],
       type = file.split('.').pop();
-  zinc.getFile(req.params.catalog, req.params.bundle, file, function (data) {
+  zinc.getFile(req.params.catalog, req.params.bundle, req.params.version, file, function (data) {
     res.attachment(file);
     res.send(data);
   });
-});
+}];
+app.get('/:catalog/:bundle.:version/*', curryFile);
+app.get('/:catalog/:bundle/*', curryFile);
 
 app.all('/admin/*', auth);
-app.get('/admin/settings', function (req, res) {
-  loadSettings(req.query);
-  res.send('OK!');
-});
 app.get('/admin/reset', function (req, res) {
   zinc.reset();
   res.send('Cache reset!');
+});
+app.get('/admin/settings', function (req, res) {
+  loadSettings(req.query);
+  res.send('OK!');
 });
 function loadSettings(settings) {
   for (key in settings) {
