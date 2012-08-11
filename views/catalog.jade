@@ -2,7 +2,13 @@ extends layout
 
 block content
   h1= title
-  ul
-    each bundle_data, bundle in data.bundles
-      li
-        a(href='/#{data.id}/#{bundle}')= bundle
+  #main_list
+    ul(class='list')
+      each bundle_data, bundle in data.bundles
+        li
+          a(href='/#{data.id}/#{bundle}', class="name")
+            = bundle
+          each version in bundle_data.versions
+              |  
+              sup
+                  a(href='/#{data.id}/#{bundle}.#{version}')= version

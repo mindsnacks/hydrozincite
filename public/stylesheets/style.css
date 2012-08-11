@@ -4,5 +4,20 @@ body {
 }
 
 a {
-  color: #00B7FF;
+  color: #0087BF;
+}
+
+.arrow {
+	display: inline-block;
+	position: relative;
+	top: 4px;
+	height: 0;
+	width: 0;
+	border: 5px solid #00579F;
+	border-bottom-color: transparent;
+	border-left-color: transparent;
+	margin-left: 5px;
+}
+a.arrow:hover {
+	background: rgba(0,0,255,0.5);
 }

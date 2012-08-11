@@ -2,7 +2,15 @@ extends layout
 
 block content
   h1= title
-  ul
-    each file_data, file in data.files
-      li
-        a(href='/#{catalog}/#{bundle}/#{file}')= file
+  #main_list
+    ul(class='list')
+      each file_data, file in data.files
+        li
+          - bundlev = bundle + (version ? '.' + version : '')
+          a(href='/#{catalog}/#{bundlev}/#{file}', class="name")
+            = file
+
+          - orig = zinc.origFile(catalog, bundle, version, file)
+          sup
+            | 
+            a(href='#{orig}', class='arrow') .
