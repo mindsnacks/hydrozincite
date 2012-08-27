@@ -22,7 +22,7 @@ Zinc.prototype.manifest = function (catalog, bundle, version) {
 
 Zinc.prototype.filePath = function (catalog, bundle, version, file) {
   var man = this.manifest(catalog, bundle, version),
-      sha = man.files[file].sha
+      sha = man.files[file].sha,
       fmt = Object.keys(man.files[file].formats).pop();
   return 'objects/' + sha.slice(0,2) + '/' + sha.slice(2,4) + '/' + sha + (fmt != 'raw' ? '.' + fmt : '');
 }
@@ -104,7 +104,8 @@ Zinc.prototype.reset = function () {
 // MiddleWare generators
 // ------
 Zinc.prototype.ensureCatalog = function () {
-  var _this = this;
+  var _this = this,
+      t;
   return function(req, res, next) {
     var cat = req.params.catalog;
     if (!cat) console.error('No catalog');
@@ -114,6 +115,12 @@ Zinc.prototype.ensureCatalog = function () {
     } else {
       next();
     }
+
+    // blow out cache if we don't get hit for a while
+    clearTimeout(t);
+    t = setTimeout(function () {
+      _this.reset();
+    }, 3 * 60 * 1000);
   }
 }
 

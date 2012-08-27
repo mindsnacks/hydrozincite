@@ -8,5 +8,7 @@
 
 		list.sort('name', {asc: true});
 
+		// prettify.js
+		prettyPrint();
 	});
 })(jQuery);

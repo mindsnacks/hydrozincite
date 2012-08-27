@@ -4,6 +4,7 @@
  */
 
 var express = require('express')
+  , connect = require('connect')
   , params = require('express-params')
   , routes = require('./routes')
   , http = require('http')
@@ -15,7 +16,7 @@ var app = express();
 params.extend(app);
 
 app.configure(function(){
-  app.set('port', process.env.PORT || 3000);
+  app.set('port', process.env.PORT || 4000);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.favicon());
@@ -24,6 +25,9 @@ app.configure(function(){
   app.use(express.methodOverride());
   app.use(app.router);
   app.use(express.static(path.join(__dirname, 'public')));
+  app.use(connect.compress({ filter: function(){return 1} }));
+
+  app.set('json spaces', 0);
 });
 
 app.configure('development', function(){
@@ -31,6 +35,11 @@ app.configure('development', function(){
 });
 
 var zinc = new Zinc('mindsnacks-zinc.s3.amazonaws.com');
+
+app.get('/*', function (req, res, next) {
+  res.set('Access-Control-Allow-Origin', '*');
+  next();
+});
 
 app.get('/', routes.index);
 
@@ -55,7 +64,7 @@ app.get('/:catalog', zinc.ensureCatalog(), function(req, res) {
   });
 });
 
-var loadManifest = [zinc.ensureManifest(), function (req, res) {
+var returnManifest = [zinc.ensureManifest(), function (req, res) {
   var catalog = req.params.catalog,
       bundle = req.params.bundle,
       version = req.params.version;
@@ -77,20 +86,20 @@ var loadManifest = [zinc.ensureManifest(), function (req, res) {
     }
   });
 }];
-app.get('/:catalog/:bundle.:version', loadManifest);
+app.get('/:catalog/:bundle.:version', returnManifest);
 
-app.get('/:catalog/:bundle', loadManifest);
+app.get('/:catalog/:bundle', returnManifest);
 
-var curryFile = [zinc.ensureManifest(), function(req, res) {
-  var file = req.params[0],
+ var returnFile = [zinc.ensureManifest(), function(req, res) {
+  var file = req.params[0], 
       type = file.split('.').pop();
   zinc.getFile(req.params.catalog, req.params.bundle, req.params.version, file, function (data) {
     res.attachment(file);
     res.send(data);
   });
 }];
-app.get('/:catalog/:bundle.:version/*', curryFile);
-app.get('/:catalog/:bundle/*', curryFile);
+app.get('/:catalog/:bundle.:version/*', returnFile);
+app.get('/:catalog/:bundle/*', returnFile);
 
 app.all('/admin/*', auth);
 app.get('/admin/reset', function (req, res) {
