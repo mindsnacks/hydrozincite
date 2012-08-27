@@ -6,8 +6,10 @@
     "start": "node app"
   },
   "dependencies": {
+    "connect": "",
     "express": "3.0.0rc1",
     "express-params": ">= 0.0.3",
+    
     "jade": "*"
   },
   "engines": {
