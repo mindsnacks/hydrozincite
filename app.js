@@ -10,13 +10,14 @@ var express = require('express')
   , http = require('http')
   , path = require('path')
   , Zinc = require('./zinc')
-  , auth = express.basicAuth('mindsnacks', 'nicksdamns');
+  , auth = express.basicAuth('mindsnacks', 'nicksdamns')
+  , _ = require('lodash');
 
 var app = express();
 params.extend(app);
 
 app.configure(function(){
-  app.set('port', process.env.PORT || 4000);
+  app.set('port', process.env.PORT || 5000);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.favicon());
@@ -59,7 +60,7 @@ app.get('/:catalog', zinc.ensureCatalog(), function(req, res) {
     },
     
     json: function(){
-      res.json(zinc.catalogs[catalog]);
+      res.json(_(zinc.catalogs[catalog]).omit("manifests"));
     }
   });
 });
