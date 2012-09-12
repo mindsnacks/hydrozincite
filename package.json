@@ -10,7 +10,8 @@
     "express": "3.0.0rc1",
     "express-params": ">= 0.0.3",
     
-    "jade": "*"
+    "jade": "*",
+    "lodash": ">=0.7.x"
   },
   "engines": {
     "node": "0.8.x",
