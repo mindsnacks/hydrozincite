@@ -39,6 +39,13 @@ var zinc = new Zinc('mindsnacks-zinc.s3.amazonaws.com');
 
 app.get('/*', function (req, res, next) {
   res.set('Access-Control-Allow-Origin', '*');
+
+  // hack to force json format
+  if (req.query.format == 'json') {
+    req.accepts = function (type) {
+      return "json";
+    }
+  }
   next();
 });
 
