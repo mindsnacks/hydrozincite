@@ -20,10 +20,15 @@ Zinc.prototype.manifest = function (catalog, bundle, version) {
   return this.catalogs[catalog].manifests[version ? this.manifestPath(bundle,version) : bundle];
 }
 
+Zinc.prototype.file = function (catalog, bundle, version, file) {
+  var man = this.manifest(catalog, bundle, version);
+  return man.files[file] || man.files[file.split('/').pop()]; // chop off path if it's not keyed with it 
+}
+
 Zinc.prototype.filePath = function (catalog, bundle, version, file) {
-  var man = this.manifest(catalog, bundle, version),
-      sha = man.files[file].sha,
-      fmt = Object.keys(man.files[file].formats).pop();
+  var fileObj = this.file(catalog, bundle, version, file),
+      sha = fileObj.sha,
+      fmt = Object.keys(fileObj.formats).pop();
   return 'objects/' + sha.slice(0,2) + '/' + sha.slice(2,4) + '/' + sha + (fmt != 'raw' ? '.' + fmt : '');
 }
 
@@ -85,13 +90,13 @@ Zinc.prototype.getManifest = function (catalog, bundle, version, callback) {
 }
 
 Zinc.prototype.getFile = function (catalog, bundle, version, file, callback) {
-  var man = this.manifest(catalog, bundle, version),
-      path = this.filePath(catalog, bundle, version, file);
+  var path = this.filePath(catalog, bundle, version, file),
+      fileObj = this.file(catalog, bundle, version, file);
 
-  if (man.files[file].cached) return callback(man.files[file].cached);
+  if (fileObj.cached) return callback(fileObj.cached);
   
   this.get(catalog, path, function (data) {
-    man.files[file].cached = data;
+    fileObj.cached = data;
     callback(data);
   });
 }
