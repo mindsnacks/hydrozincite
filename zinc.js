@@ -4,6 +4,7 @@ var http = require('http'),
 function Zinc(host) {
   this.host = host;
   this.catalogs = {};
+  this.cache = {};
 }
 
 exports = module.exports = Zinc;
@@ -90,18 +91,20 @@ Zinc.prototype.getManifest = function (catalog, bundle, version, callback) {
 }
 
 Zinc.prototype.getFile = function (catalog, bundle, version, file, callback) {
-  var path = this.filePath(catalog, bundle, version, file),
+  var _this = this,
+      path = this.filePath(catalog, bundle, version, file),
       fileObj = this.file(catalog, bundle, version, file);
 
-  if (fileObj.cached) return callback(fileObj.cached);
+  if (this.cache[path]) return callback(this.cache[path]);
   
   this.get(catalog, path, function (data) {
-    fileObj.cached = data;
+    _this.cache[path] = data;
     callback(data);
   });
 }
 
 Zinc.prototype.reset = function () {
+  this.cache = {};
   return this.catalogs = {};
 }
 
