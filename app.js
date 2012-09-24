@@ -35,11 +35,16 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
+
 var zinc = new Zinc('mindsnacks-zinc.s3.amazonaws.com');
 
-app.get('/*', function (req, res, next) {
-  res.set('Access-Control-Allow-Origin', '*');
 
+app.all('/*', function(req, res, next) {
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    next();
+})
+app.get('/*', function (req, res, next) {
   // hack to force json format
   if (req.query.format == 'json') {
     req.accepts = function (type) {
