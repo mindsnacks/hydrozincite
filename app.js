@@ -84,7 +84,7 @@ var returnManifest = [zinc.ensureManifest(), function (req, res) {
   res.format({
     html: function(){
       var vars = { 
-        title: 'Files for ' + bundle + (version ? ' v' + version : ''),
+        title: 'Files in bundle: ',
         data: zinc.manifest(catalog, bundle, version),
         bundle: bundle,
         catalog: req.params.catalog,
