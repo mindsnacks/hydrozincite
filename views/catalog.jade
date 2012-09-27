@@ -6,12 +6,14 @@ block content
     ul(class='list')
       each bundle_data, bundle in data.bundles
         li
-          a(href='/#{data.id}/#{bundle}', class="name")
+          a(href='/#{data.id}/#{bundle}', class="name", title="Latest version of #{bundle}")
             = bundle
           each version in bundle_data.versions
-              |  
-              sup
-                  a(href='/#{data.id}/#{bundle}.#{version}')= version
-
-  #dump
-    pre(class="prettyprint lang-js")
+            |  
+            sup
+              a(href='/#{data.id}/#{bundle}.#{version}')= version
+              each distro_version, distro in bundle_data.distributions
+                if version == distro_version
+                  sup
+                    = distro
+                    | 
