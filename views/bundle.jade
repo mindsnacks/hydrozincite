@@ -1,7 +1,13 @@
 extends layout
 
 block content
-  h1= title
+  h2= title
+  h3
+    | / 
+    a(href='/#{catalog}/')
+      = catalog
+    |  / 
+    = bundle + (version ? ' v' + version : '')
   #main_list
     ul(class='list')
       each file_data, file in data.files
