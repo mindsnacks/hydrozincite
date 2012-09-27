@@ -1,14 +1,22 @@
 (function ($) {
 	$(document).ready(function() {
-		$('#main_list').prepend($('<input class="search" />'))
-		list = new List('main_list', {
-			valueNames: ["name"],
-			page: 1000
+		$('#main_list').prepend($('<span>Filter: <input class="search" /></span>')).each(function(){
+			list = new List('main_list', {
+				valueNames: ["name"],
+				page: 1000
+			});
+
+			list.sort('name', {asc: true});
 		});
 
-		list.sort('name', {asc: true});
-
-		// prettify.js
-		prettyPrint();
+		$('#main_list .list li').each(function (){
+			$this = $(this);
+			if ($this.children('a').attr('href').match(/_small\.(png|jpg)$/i)) {
+				var img = new Image();
+				img.src = $this.children('a').attr('href');
+				img.height = img.width = 75;
+				$this.prepend(img);
+			}
+		});
 	});
 })(jQuery);

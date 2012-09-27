@@ -7,6 +7,13 @@ a {
   color: #0087BF;
 }
 
+sup {
+  color: #838f94;
+}
+sup a {
+  color: #679bb1;
+}
+
 .arrow {
 	display: inline-block;
 	position: relative;
