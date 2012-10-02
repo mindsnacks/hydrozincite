@@ -10,8 +10,15 @@ var express = require('express')
   , http = require('http')
   , path = require('path')
   , Zinc = require('./zinc')
-  , auth = express.basicAuth('mindsnacks', 'nicksdamns')
   , _ = require('lodash');
+
+
+try {
+  var config = require('./config');
+} catch (e) {
+  console.log('config.js not found. See: config.js.sample for an example');
+  return;
+}
 
 var app = express();
 params.extend(app);
@@ -36,8 +43,8 @@ app.configure('development', function(){
 });
 
 
-var zinc = new Zinc('mindsnacks-zinc.s3.amazonaws.com');
-
+var zinc = new Zinc(config.repo_host)
+  , auth = express.basicAuth(config.admin_name, config.admin_name);
 
 app.all('/*', function(req, res, next) {
     res.set('Access-Control-Allow-Origin', '*');
@@ -54,7 +61,12 @@ app.get('/*', function (req, res, next) {
   next();
 });
 
-app.get('/', routes.index);
+app.get('/', function(req, res){
+  res.render('index', { 
+    title: 'Hydrozincite - ' + config.repo_host,
+    default_catalog: config.default_catalog
+  });
+});
 
 app.param('catalog', /\w+\.[\w.]+/);
 app.param('bundle', /[\w-]+/);

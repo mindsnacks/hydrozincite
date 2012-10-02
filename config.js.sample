@@ -1,0 +1,5 @@
+exports = module.exports = {
+	admin_name: 'admin',
+	admin_password: 'password',
+	repo_host: 'my-zinc.s3.amazonaws.com'
+}
