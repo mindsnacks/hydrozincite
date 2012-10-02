@@ -42,9 +42,9 @@ app.configure('development', function(){
 });
 
 
-var zinc = new Zinc(ZINC_HOST)
+var zinc = new Zinc(process.env.ZINC_HOST)
   , auth = express.basicAuth(function (username, password) {
-    return ADMIN_USERNAME === username & ADMIN_PASSWORD === password;
+    return process.env.ADMIN_USERNAME === username & process.env.ADMIN_PASSWORD === password;
   });
 
 app.all('/*', function(req, res, next) {
