@@ -17,7 +17,6 @@ try {
   var config = require('./config');
 } catch (e) {
   console.log('config.js not found. See: config.js.sample for an example');
-  return;
 }
 
 var app = express();
