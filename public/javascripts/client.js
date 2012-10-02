@@ -2,7 +2,7 @@
 	$(document).ready(function() {
 		$('#main_list').prepend($('<span>Filter: <input class="search" /></span>')).each(function(){
 			list = new List('main_list', {
-				valueNames: ["name"],
+				valueNames: ["name", "flavor"],
 				page: 1000
 			});
 
