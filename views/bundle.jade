@@ -15,11 +15,12 @@ block content
           - bundlev = bundle + (version ? '.' + version : '')
           a(href='/#{catalog}/#{bundlev}/#{file}', class="name")
             = file
-
           - orig = zinc.origFile(catalog, bundle, version, file)
           sup
             | 
             a(href='#{orig}', class='arrow') .
+          .flavor
+            = ' - ' + file_data.flavors
 
   #dump
     pre(class="prettyprint lang-js")
