@@ -44,7 +44,7 @@ app.configure('development', function(){
 
 
 var zinc = new Zinc(config.repo_host)
-  , auth = express.basicAuth(config.admin_name, config.admin_name);
+  , auth = express.basicAuth(config.admin_name, config.admin_password);
 
 app.all('/*', function(req, res, next) {
     res.set('Access-Control-Allow-Origin', '*');
@@ -126,7 +126,8 @@ app.get('/:catalog/:bundle', returnManifest);
 app.get('/:catalog/:bundle.:version/*', returnFile);
 app.get('/:catalog/:bundle/*', returnFile);
 
-app.all('/admin/*', auth);
+app.all('/*', auth);
+
 app.get('/admin/reset', function (req, res) {
   zinc.reset();
   res.send('Cache reset!');
