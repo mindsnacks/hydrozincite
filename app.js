@@ -22,7 +22,7 @@ try {
 var admin_username = process.env.ADMIN_USERNAME || config.admin_username,
     admin_password = process.env.ADMIN_PASSWORD || config.admin_password,
     zinc_host = process.env.ZINC_HOST || config.repo_host,
-    default_catalog = process.env.DEFAULT_CATALOG || confg.default_catalog;
+    default_catalog = process.env.DEFAULT_CATALOG || config.default_catalog;
 
 var app = express();
 params.extend(app);
