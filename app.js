@@ -47,7 +47,7 @@ app.configure('development', function(){
 });
 
 
-var zinc = new Zinc(process.env.ZINC_HOST)
+var zinc = new Zinc(zinc_host)
   , auth = express.basicAuth(function (username, password) {
     return process.env.ADMIN_USERNAME === username & process.env.ADMIN_PASSWORD === password;
   });
@@ -69,7 +69,7 @@ app.get('/*', function (req, res, next) {
 
 app.get('/', function(req, res){
   res.render('index', { 
-    title: 'Hydrozincite - ' + process.env.repo_host,
+    title: 'Hydrozincite - ' + zinc_host,
     default_catalog: default_catalog
   });
 });
