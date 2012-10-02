@@ -44,7 +44,9 @@ app.configure('development', function(){
 
 
 var zinc = new Zinc(config.repo_host)
-  , auth = express.basicAuth(config.admin_name, config.admin_password);
+  , auth = express.basicAuth(function (username, password) {
+    return ADMIN_USERNAME === username & ADMIN_PASSWORD === password;
+  });
 
 app.all('/*', function(req, res, next) {
     res.set('Access-Control-Allow-Origin', '*');
