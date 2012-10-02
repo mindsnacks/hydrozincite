@@ -64,7 +64,7 @@ app.get('/*', function (req, res, next) {
 
 app.get('/', function(req, res){
   res.render('index', { 
-    title: 'Hydrozincite - ' + config.repo_host,
+    title: 'Hydrozincite - ' + process.env.ZINC_HOST,
     default_catalog: config.default_catalog
   });
 });
