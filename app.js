@@ -42,7 +42,7 @@ app.configure('development', function(){
 });
 
 
-var zinc = new Zinc(config.repo_host)
+var zinc = new Zinc(ZINC_HOST)
   , auth = express.basicAuth(function (username, password) {
     return ADMIN_USERNAME === username & ADMIN_PASSWORD === password;
   });
