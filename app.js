@@ -19,6 +19,11 @@ try {
   console.log('config.js not found. See: config.js.sample for an example');
 }
 
+var admin_username = process.env.ADMIN_USERNAME || config.admin_username,
+    admin_password = process.env.ADMIN_PASSWORD || config.admin_password,
+    zinc_host = process.env.ZINC_HOST || config.repo_host,
+    default_catalog = process.env.DEFAULT_CATALOG || confg.default_catalog;
+
 var app = express();
 params.extend(app);
 
@@ -64,8 +69,8 @@ app.get('/*', function (req, res, next) {
 
 app.get('/', function(req, res){
   res.render('index', { 
-    title: 'Hydrozincite - ' + process.env.ZINC_HOST,
-    default_catalog: config.default_catalog
+    title: 'Hydrozincite - ' + process.env.repo_host,
+    default_catalog: default_catalog
   });
 });
 
