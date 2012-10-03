@@ -2,7 +2,6 @@
 /**
  * Module dependencies.
  */
-
 var express = require('express')
   , connect = require('connect')
   , params = require('express-params')
@@ -12,17 +11,24 @@ var express = require('express')
   , Zinc = require('./zinc')
   , _ = require('lodash');
 
-
+/**
+ * Config
+ */
 try {
   var config = require('./config');
 } catch (e) {
   console.log('config.js not found. See: config.js.sample for an example');
 }
-
 var admin_username = process.env.ADMIN_USERNAME || config.admin_username,
     admin_password = process.env.ADMIN_PASSWORD || config.admin_password,
     zinc_host = process.env.ZINC_HOST || config.repo_host,
-    default_catalog = process.env.DEFAULT_CATALOG || config.default_catalog;
+    default_catalog = process.env.DEFAULT_CATALOG || config.default_catalog,
+   
+    auth = express.basicAuth(function (username, password) {
+      _.each(arguments, function(a){console.log(a)});
+      console.log(username, password, admin_username, admin_password);
+      return admin_username === username && admin_password === password;
+    });
 
 var app = express();
 params.extend(app);
@@ -47,11 +53,12 @@ app.configure('development', function(){
 });
 
 
-var zinc = new Zinc(zinc_host)
-  , auth = express.basicAuth(function (username, password) {
-      return process.env.ADMIN_USERNAME === username & process.env.ADMIN_PASSWORD === password;
-    });
+var zinc = new Zinc(zinc_host);
 
+
+/**
+ * Enable CORS 
+ */
 app.all('/*', function(req, res, next) {
     res.set('Access-Control-Allow-Origin', '*');
     res.set('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
@@ -67,6 +74,10 @@ app.get('/*', function (req, res, next) {
   next();
 });
 
+
+/**
+ * Routes
+ */
 app.get('/', function(req, res){
   res.render('index', { 
     title: 'Hydrozincite - ' + zinc_host,
@@ -132,6 +143,7 @@ app.get('/:catalog/:bundle', returnManifest);
 app.get('/:catalog/:bundle.:version/*', returnFile);
 app.get('/:catalog/:bundle/*', returnFile);
 
+app.get('/admin/*', auth);
 app.get('/admin/reset', function (req, res) {
   zinc.reset();
   res.send('Cache reset!');
