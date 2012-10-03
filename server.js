@@ -16,9 +16,13 @@ var express = require('express')
 try {
   var config = require('./config');
 } catch (e) {
-  console.log('config.js not found. See config.js.sample for an example');
-  return;
+  console.log('config.js not found. See: config.js.sample for an example');
 }
+
+var admin_username = process.env.ADMIN_USERNAME || config.admin_username,
+    admin_password = process.env.ADMIN_PASSWORD || config.admin_password,
+    zinc_host = process.env.ZINC_HOST || config.repo_host,
+    default_catalog = process.env.DEFAULT_CATALOG || config.default_catalog;
 
 var app = express();
 params.extend(app);
@@ -43,8 +47,10 @@ app.configure('development', function(){
 });
 
 
-var zinc = new Zinc(config.repo_host)
-  , auth = express.basicAuth(config.admin_name, config.admin_name);
+var zinc = new Zinc(zinc_host)
+  , auth = express.basicAuth(function (username, password) {
+      return process.env.ADMIN_USERNAME === username & process.env.ADMIN_PASSWORD === password;
+    });
 
 app.all('/*', function(req, res, next) {
     res.set('Access-Control-Allow-Origin', '*');
@@ -63,8 +69,8 @@ app.get('/*', function (req, res, next) {
 
 app.get('/', function(req, res){
   res.render('index', { 
-    title: 'Hydrozincite - ' + config.repo_host,
-    default_catalog: config.default_catalog
+    title: 'Hydrozincite - ' + zinc_host,
+    default_catalog: default_catalog
   });
 });
 
@@ -126,7 +132,6 @@ app.get('/:catalog/:bundle', returnManifest);
 app.get('/:catalog/:bundle.:version/*', returnFile);
 app.get('/:catalog/:bundle/*', returnFile);
 
-app.all('/admin/*', auth);
 app.get('/admin/reset', function (req, res) {
   zinc.reset();
   res.send('Cache reset!');
