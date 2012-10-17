@@ -1,26 +1,41 @@
 extends layout
 
 block content
-  h2= title
-  h3
-    | / 
-    a(href='/#{catalog}/')
-      = catalog
-    |  / 
-    = bundle + (version ? ' v' + version : '')
+  .page-header
+    h1= title
+    ul.breadcrumb
+      li
+        span.divider /
+        a(href='/#{catalog}/')
+          = catalog
+      li
+        span.divider /
+        = bundle + (version ? ' v' + version : '')
   #main_list
-    ul(class='list')
-      each file_data, file in data.files
-        li
+    table.table.table-bordered
+      thead
+        tr
+          th
+            | File
+          th.span3
+            | Flavor tags
+          th.span2
+            | Zinc URL
+      tbody.list
+        each file_data, file in data.files
           - bundlev = bundle + (version ? '.' + version : '')
-          a(href='/#{catalog}/#{bundlev}/#{file}', class="name")
-            = file
           - orig = zinc.origFile(catalog, bundle, version, file)
-          sup
-            | 
-            a(href='#{orig}', class='arrow') .
-          .flavor
-            = ' - ' + file_data.flavors
-
-  #dump
-    pre(class="prettyprint lang-js")
+          - shortHash = orig.split('/').pop().substr(0,10)
+          tr
+            td.name
+              a(href='/#{catalog}/#{bundlev}/#{file}', class="name")
+                = file
+            td.flavor
+              if file_data.flavors
+                each flavor in file_data.flavors
+                  |  
+                  a(href='#').label.label-info
+                    = flavor
+            td
+              a(href='#{orig}')
+                = shortHash

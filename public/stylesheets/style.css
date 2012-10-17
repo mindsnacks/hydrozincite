@@ -3,6 +3,10 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
+.btn-uniform {
+	width: 26px;
+}
+
 a {
   color: #0087BF;
 }

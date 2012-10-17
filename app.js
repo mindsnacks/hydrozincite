@@ -21,12 +21,10 @@ try {
 }
 var admin_username = process.env.ADMIN_USERNAME || config.admin_username,
     admin_password = process.env.ADMIN_PASSWORD || config.admin_password,
-    zinc_host = process.env.ZINC_HOST || config.repo_host,
+    zinc_host = process.env.ZINC_HOST || config.zinc_host,
     default_catalog = process.env.DEFAULT_CATALOG || config.default_catalog,
    
     auth = express.basicAuth(function (username, password) {
-      _.each(arguments, function(a){console.log(a)});
-      console.log(username, password, admin_username, admin_password);
       return admin_username === username && admin_password === password;
     });
 
@@ -64,6 +62,7 @@ app.all('/*', function(req, res, next) {
     res.set('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     next();
 })
+
 app.get('/*', function (req, res, next) {
   // hack to force json format
   if (req.query.format == 'json') {
@@ -78,7 +77,7 @@ app.get('/*', function (req, res, next) {
 /**
  * Routes
  */
-app.get('/', function(req, res){
+app.get('/', auth, function(req, res){
   res.render('index', { 
     title: 'Hydrozincite - ' + zinc_host,
     default_catalog: default_catalog
@@ -89,12 +88,12 @@ app.param('catalog', /\w+\.[\w.]+/);
 app.param('bundle', /[\w-]+/);
 app.param('version', /[0-9]+/);
 
-app.get('/:catalog', zinc.ensureCatalog(), function(req, res) {
+app.get('/:catalog', auth, zinc.ensureCatalog(), function(req, res) {
   catalog = req.params.catalog;
   res.format({
     html: function(){
       var vars = {
-        title: 'Bundles for ' + catalog,
+        title: 'Catalog of bundles',
         data: zinc.catalogs[catalog]
       }
       res.render('catalog', vars);
@@ -113,7 +112,7 @@ var returnManifest = [zinc.ensureManifest(), function (req, res) {
   res.format({
     html: function(){
       var vars = { 
-        title: 'Files in bundle: ',
+        title: 'Manifest of files',
         data: zinc.manifest(catalog, bundle, version),
         bundle: bundle,
         catalog: req.params.catalog,
@@ -128,9 +127,9 @@ var returnManifest = [zinc.ensureManifest(), function (req, res) {
     }
   });
 }];
-app.get('/:catalog/:bundle.:version', returnManifest);
+app.get('/:catalog/:bundle.:version', auth, returnManifest);
 
-app.get('/:catalog/:bundle', returnManifest);
+app.get('/:catalog/:bundle', auth, returnManifest);
 
  var returnFile = [zinc.ensureManifest(), function(req, res) {
   var file = req.params[0], 

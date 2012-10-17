@@ -1,7 +1,12 @@
 extends layout
 
 block content
-  h2= title
-  label Goto catalog:
-    input(type='text', value='#{default_catalog}', id='catalog')
-    input(type='button', value='Go', onclick='window.location += document.getElementById("catalog").value')
+  .page-header
+    h2= title
+
+  form.form-inline
+    label Browse catalog:
+    | 
+    .input-append
+      input(type='text', value='#{default_catalog}', id='catalog')
+      input.btn(type='button', value='Go', onclick='window.location += document.getElementById("catalog").value')

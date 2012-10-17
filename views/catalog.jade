@@ -1,19 +1,42 @@
 extends layout
 
 block content
-  h2= title
+  .page-header
+    h1= title
+    ul.breadcrumb
+      li
+        span.divider /
+        = catalog
+  
   #main_list
-    ul(class='list')
-      each bundle_data, bundle in data.bundles
-        li
-          a(href='/#{data.id}/#{bundle}', class="name", title="Latest version of #{bundle}")
-            = bundle
-          each version in bundle_data.versions
-            |  
-            sup
-              a(href='/#{data.id}/#{bundle}.#{version}')= version
-              each distro_version, distro in bundle_data.distributions
-                if version == distro_version
-                  sup
-                    = distro
-                    | 
+    table.table.table-bordered
+      thead
+        tr
+          th
+            | Bundle
+          th
+            | Versions
+
+      tbody.list
+        each bundle_data, bundle in data.bundles
+          tr
+            td.name
+              a(href='/#{data.id}/#{bundle}', title="Latest version of #{bundle}")
+                = bundle
+            td.span1
+              - version_list = bundle_data.versions.reverse()
+              .btn-group.pull-right
+                a.btn.btn-uniform(href='/#{data.id}/#{bundle}.#{version_list[0]}')
+                  = version_list[0]
+                a.btn.dropdown-toggle(data-toggle="dropdown")
+                  span.caret
+
+                ul.dropdown-menu
+                  each version in bundle_data.versions
+                    li
+                      a(href='/#{data.id}/#{bundle}.#{version}')= version
+                        each distro_version, distro in bundle_data.distributions
+                          if version == distro_version
+                            | 
+                            span.label.label-info.pull-right
+                              = distro

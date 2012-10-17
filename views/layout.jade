@@ -2,13 +2,15 @@ doctype 5
 html
   head
     title= title
+    link(href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-combined.min.css", rel="stylesheet")
     link(rel="stylesheet", type="text/css", href="/stylesheets/style.css")
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js')
 
-    link(href="/stylesheets/prettify.css", type="text/css", rel="stylesheet")
-    script(type="text/javascript", src="/javascripts/prettify.js")
+    script(src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js")
+
   body
-    block content
+    .container
+        block content
 
     script(src='/javascripts/list.js')
     script(src='/javascripts/client.js')
