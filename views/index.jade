@@ -4,9 +4,9 @@ block content
   .page-header
     h2= title
 
-  form.form-inline
+  form.form-inline(onSubmit='return window.location += document.getElementById("catalog").value, false')
     label Browse catalog:
     | 
     .input-append
       input(type='text', value='#{default_catalog}', id='catalog')
-      input.btn(type='button', value='Go', onclick='window.location += document.getElementById("catalog").value')
+      input.btn(type='submit', value='Go')

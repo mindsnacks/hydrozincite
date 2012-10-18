@@ -24,7 +24,7 @@ block content
               a(href='/#{data.id}/#{bundle}', title="Latest version of #{bundle}")
                 = bundle
             td.span1
-              - version_list = bundle_data.versions.reverse()
+              - version_list = bundle_data.versions.slice().reverse()
               .btn-group.pull-right
                 a.btn.btn-uniform(href='/#{data.id}/#{bundle}.#{version_list[0]}')
                   = version_list[0]
@@ -32,7 +32,7 @@ block content
                   span.caret
 
                 ul.dropdown-menu
-                  each version in bundle_data.versions
+                  each version in version_list
                     li
                       a(href='/#{data.id}/#{bundle}.#{version}')= version
                         each distro_version, distro in bundle_data.distributions
