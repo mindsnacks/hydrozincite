@@ -134,9 +134,13 @@ app.get('/:catalog/:bundle', auth, returnManifest);
  var returnFile = [zinc.ensureManifest(), function(req, res) {
   var file = req.params[0], 
       type = file.split('.').pop();
-  zinc.getFile(req.params.catalog, req.params.bundle, req.params.version, file, function (data) {
+  zinc.getFile(req.params.catalog, req.params.bundle, req.params.version, file, function (resp) {
+    if (resp instanceof Error) {
+      console.error(resp);
+      return res.send(404, 'File not found.');
+    }
     res.attachment(file);
-    res.send(data);
+    res.send(resp);
   });
 }];
 app.get('/:catalog/:bundle.:version/*', returnFile);

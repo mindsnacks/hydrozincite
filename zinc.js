@@ -18,7 +18,9 @@ Zinc.prototype.manifestPath = function (bundle, version) {
 }
 
 Zinc.prototype.manifest = function (catalog, bundle, version) {
-  return this.catalogs[catalog].manifests[version ? this.manifestPath(bundle,version) : bundle];
+  return this.catalogs[catalog] // make sure catalog exists
+    && this.catalogs[catalog].manifests
+    && this.catalogs[catalog].manifests[version ? this.manifestPath(bundle,version) : bundle];
 }
 
 Zinc.prototype.file = function (catalog, bundle, version, file) {
@@ -63,21 +65,27 @@ Zinc.prototype.get = function (catalog, path, callback) {
 Zinc.prototype.getCatalog = function (catalog, callback) {
   var _this = this;
   return this.get(catalog, 'index.json.gz', function (data) {
-    _this.catalogs[catalog] = JSON.parse(data);
-    callback();
+    try {
+      _this.catalogs[catalog] = JSON.parse(data);
+      callback();
+    } catch (e) {
+      callback(e);
+    }
   });
 }
 
 // The manifest is an index of files in the bundle
 Zinc.prototype.getManifest = function (catalog, bundle, version, callback) {
   var _this = this,
-      args = arguments;
+      args = arguments,
+      manifest, bundle_data, latest;
   if (!this.catalogs[catalog]) {
     return this.getCatalog(catalog, function () { _this.getManifest.apply(_this, args) });
   }
-
-  var bundle_meta = this.catalogs[catalog].bundles[bundle],
-      latest = bundle_meta.versions.slice(-1)[0];
+  if (!(bundle_data = this.catalogs[catalog].bundles[bundle])) {
+    return callback(new ReferenceError("Bundle not in catalog."));
+  }
+  latest = bundle_data.versions.slice(-1)[0];
 
   manifest = this.manifestPath(bundle, version || latest);
 
@@ -85,15 +93,21 @@ Zinc.prototype.getManifest = function (catalog, bundle, version, callback) {
     var mans = _this.catalogs[catalog].manifests || (_this.catalogs[catalog].manifests = {});
     // old versions get keyed with full path of the manifest,
     // the latest is just the bundle name
-    mans[version ? manifest : bundle] = JSON.parse(data);
-    callback();
+    try {
+      mans[version ? manifest : bundle] = JSON.parse(data);
+      callback();
+    } catch (e) {
+      callback(e);
+    }
   });
 }
 
 Zinc.prototype.getFile = function (catalog, bundle, version, file, callback) {
+  if (!this.file(catalog, bundle, version, file)) {
+    return callback(new ReferenceError('File not found in manifest.'));
+  }
   var _this = this,
-      path = this.filePath(catalog, bundle, version, file),
-      fileObj = this.file(catalog, bundle, version, file);
+      path = this.filePath(catalog, bundle, version, file);
 
   if (this.cache[path]) return callback(this.cache[path]);
   
@@ -116,10 +130,17 @@ Zinc.prototype.ensureCatalog = function () {
       t;
   return function(req, res, next) {
     var cat = req.params.catalog;
-    if (!cat) console.error('No catalog');
+    if (!cat) return res.send(404, 'Catalog not found.');
 
     if (!_this.catalogs[cat]) {
-      _this.getCatalog(cat, next);
+      _this.getCatalog(cat, function (err) {
+        if (err instanceof Error) {
+          console.error(err);
+          res.send(404, 'Catalog not found for: ' + cat);
+        } else {
+          next();
+        }
+      });
     } else {
       next();
     }
@@ -138,10 +159,18 @@ Zinc.prototype.ensureManifest = function () {
     var cat = req.params.catalog,
         bun = req.params.bundle,
         vrsn = req.params.version;
-    if (!cat || !bun) console.error('Bad bundle');
 
-    if (!_this.catalogs[cat] || !_this.catalogs[cat].manifests || !_this.manifest(cat,bun,vrsn)) {
-      _this.getManifest(cat, bun, vrsn, next);
+    if (!cat || !bun) return res.send(404, 'Bundle not found.');
+
+    if (!_this.manifest(cat,bun,vrsn)) {
+      _this.getManifest(cat, bun, vrsn, function (err) {
+        if (err instanceof Error) {
+          console.error(err);
+          res.send(404, 'Manifest not found for: ' + bun);
+        } else {
+          next();
+        }
+      });
     } else {
       next();
     }
