@@ -59,6 +59,7 @@ var zinc = new Zinc(zinc_host);
  */
 app.all('/*', function(req, res, next) {
     res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Headers', 'Authorization');
     res.set('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     next();
 })
