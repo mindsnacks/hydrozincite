@@ -40,6 +40,6 @@ Config explanations:
 
 ### Running
 
-    node server.js
+    node app.js
 
 Open a browser to http://localhost:5000
