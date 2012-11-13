@@ -32,3 +32,19 @@ sup a {
 a.arrow:hover {
 	background: rgba(0,0,255,0.5);
 }
+
+/* classes for prettify */
+pre.prettyprint {
+	margin-top: 15px;
+	max-height: 500px;
+	overflow: auto;
+}
+.pun {
+	color: #93A1A1;
+}
+.str {
+	color: #D14;
+}
+.kwd {
+	color: #1E347B;
+}

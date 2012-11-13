@@ -4,13 +4,15 @@ html
     title= title
     link(href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-combined.min.css", rel="stylesheet")
     link(rel="stylesheet", type="text/css", href="/stylesheets/style.css")
-    script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js')
 
-    script(src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js")
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js')
 
   body
     .container
         block content
 
+    script(src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js")
+    script(src='//cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js')
+    script(src='//github.com/einars/js-beautify/raw/master/beautify.js')
     script(src='/javascripts/list.js')
     script(src='/javascripts/client.js')

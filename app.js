@@ -132,7 +132,7 @@ app.get('/:catalog/:bundle.:version', auth, returnManifest);
 
 app.get('/:catalog/:bundle', auth, returnManifest);
 
- var returnFile = [zinc.ensureManifest(), function(req, res) {
+var returnFile = [zinc.ensureManifest(), function(req, res) {
   var file = req.params[0], 
       type = file.split('.').pop();
   zinc.getFile(req.params.catalog, req.params.bundle, req.params.version, file, function (resp) {
