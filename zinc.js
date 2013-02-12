@@ -174,5 +174,5 @@ Zinc.prototype.ensureManifest = function () {
     } else {
       next();
     }
-  }
+  };
 }

@@ -87,7 +87,16 @@ app.get('/', auth, function(req, res){
 
 app.param('catalog', /\w+\.[\w.]+/);
 app.param('bundle', /[\w-]+/);
-app.param('version', /[0-9]+/);
+app.param('version', function(req, res, next, vrsn) {
+    zinc.ensureCatalog()(req, res, function() {
+      if (vrsn && !parseInt(vrsn)) {
+        try { vrsn = zinc.catalogs[req.params.catalog].bundles[req.params.bundle].distributions[vrsn]; }
+        catch(e){ vrsn = null; }
+      }
+      req.params.version = vrsn;
+      next();
+    });
+});
 
 app.get('/:catalog', auth, zinc.ensureCatalog(), function(req, res) {
   catalog = req.params.catalog;
