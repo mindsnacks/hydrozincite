@@ -85,7 +85,7 @@ app.get('/', auth, function(req, res){
   });
 });
 
-app.param('catalog', /\w+\.[\w.]+/);
+app.param('catalog', /\w+\.[(\w|\-).]+/);
 app.param('bundle', /[\w-]+/);
 app.param('version', function(req, res, next, vrsn) {
     zinc.ensureCatalog()(req, res, function() {
